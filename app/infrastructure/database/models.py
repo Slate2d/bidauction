@@ -1,6 +1,6 @@
-from sqlalchemy import Column, String, DECIMAL, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, String, DECIMAL, DateTime, ForeignKey, func
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -8,22 +8,41 @@ Base = declarative_base()
 class UserModel(Base):
     __tablename__ = "users"
 
-    # TODO: Добавь колонки согласно документации (строки 76-86)
-    # Подсказка: используй UUID для id, String для email, DECIMAL(12,2) для балансов
-    pass
-
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    email = Column(String, unique=True, nullable=False, index=True)
+    password_hash = Column(String, nullable=False)
+    balance = Column(DECIMAL(12,2), nullable=False)
+    frozen_balance = Column(DECIMAL(12,2), nullable=False)
 
 class AuctionModel(Base):
     __tablename__ = "auctions"
 
-    # TODO: Добавь колонки согласно документации (строки 94-107)
-    # Не забудь про ForeignKey на users.id для seller_id и leader_id
-    pass
-
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    seller_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    title = Column(String, nullable=False)
+    start_price = Column(DECIMAL(12, 2), nullable=False)
+    start_time = Column(DateTime(timezone=True), nullable=False)
+    description = Column(String, nullable=False)
+    min_step = Column(DECIMAL(10,2), nullable=False)
+    current_price = Column(DECIMAL(12,2), nullable=False)
+    leader_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    status = Column(String, nullable=False)
+    end_time = Column(
+        DateTime(timezone=True),
+        nullable=False,
+        index=True
+    )
 
 class BidModel(Base):
     __tablename__ = "bids"
 
-    # TODO: Добавь колонки согласно документации (строки 112-122)
-    # Не забудь про ForeignKey на auctions.id и users.id
-    pass
+    id = Column(UUID(as_uuid=True), primary_key=True)
+    auction_id = Column(UUID(as_uuid=True), ForeignKey("auctions.id"), index=True, nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    amount = Column(DECIMAL(12,2), nullable=False)
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
