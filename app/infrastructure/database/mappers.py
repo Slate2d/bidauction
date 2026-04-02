@@ -7,6 +7,7 @@ from app.domain.entities.bid import Bid
 from app.infrastructure.database.models import AuctionModel, BidModel
 from app.domain.value_objects import AuctionStatus
 
+
 def auction_to_domain(model: AuctionModel) -> Auction:
     return Auction(
         id=model.id,
@@ -21,6 +22,7 @@ def auction_to_domain(model: AuctionModel) -> Auction:
         status=AuctionStatus[model.status],
         end_time=model.end_time
     )
+
 
 def auction_to_orm(entity: Auction) -> AuctionModel:
     return AuctionModel(
@@ -37,25 +39,28 @@ def auction_to_orm(entity: Auction) -> AuctionModel:
         end_time=entity.end_time
     )
 
+
 def bid_to_domain(model: BidModel) -> Bid:
     """Конвертировать ORM модель в Domain Entity."""
     return Bid(
-        id = model.id,
-        auction_id = model.auction_id,
-        user_id = model.user_id,
-        amount = Money(amount=model.amount, currency="USD"),
-        created_at = model.created_at
+        id=model.id,
+        auction_id=model.auction_id,
+        user_id=model.user_id,
+        amount=Money(amount=model.amount, currency="USD"),
+        created_at=model.created_at
     )
+
 
 def bid_to_orm(entity: Bid) -> BidModel:
     """Конвертировать Domain Entity в ORM модель."""
     return BidModel(
-        id = entity.id,
-        auction_id = entity.auction_id,
-        user_id = entity.user_id,
-        amount = entity.amount.amount,
-        created_at = entity.created_at
+        id=entity.id,
+        auction_id=entity.auction_id,
+        user_id=entity.user_id,
+        amount=entity.amount.amount,
+        created_at=entity.created_at
     )
+
 
 def user_to_domain(model: UserModel) -> User:
     """Конвертировать ORM модель в Domain Entity.
